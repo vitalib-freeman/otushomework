@@ -11,6 +11,14 @@ public class Question {
     this.answerText = answer;
   }
 
+  public String getQuestionText() {
+    return questionText;
+  }
+
+  public String getAnswerText() {
+    return answerText;
+  }
+
   @Override
   public String toString() {
     return "Question: " + questionText + "\n\tAnswer:" + answerText;
