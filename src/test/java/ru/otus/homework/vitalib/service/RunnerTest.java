@@ -8,6 +8,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.otus.homework.vitalib.model.Answer;
 import ru.otus.homework.vitalib.model.Question;
+import ru.otus.homework.vitalib.model.VerifiedAnswer;
 
 import java.util.List;
 
@@ -21,31 +22,35 @@ class RunnerTest {
 
   @Mock
   private CliReader reader;
-
-  @InjectMocks
-  CliRunner runner;
-
   @Mock
   private QuestionServiceImpl questionService;
   @Mock
   private SimpleEvaluationService evaluationService;
+  @Mock
+  private SimpleGradeService gradingService;
 
   @Test
   public void testRunner() {
     Question question = new Question("QuestionText", "QuestionAnswer");
     List<Question> questions = List.of(question);
-    Answer questionAnswer = new Answer(question, "QuestionAnswer", false);
-    List<Answer> answers = List.of(questionAnswer);
+    Answer answer = new Answer(question, "QuestionAnswer");
+    List<Answer> answers = List.of(answer);
+    VerifiedAnswer verifiedAnswer = new VerifiedAnswer(question, "QuestionAnswer", true);
     when(questionService.getQuestions()).thenReturn(questions);
     when(reader.read()).thenReturn("QuestionAnswer");
+    when(evaluationService.evaluate(answers)).thenReturn(List.of(verifiedAnswer));
+    when(gradingService.hasPass(List.of(verifiedAnswer), 1d)).thenReturn(true);
 
-    runner.run();
+
+    new CliRunner(writer, reader, questionService, evaluationService, gradingService, 1d).run();
 
     verify(writer).write("Hi, input pls your name: ");
     verify(questionService).getQuestions();
     verify(writer).write("QuestionText");
     verify(reader, Mockito.times(2)).read();
     verify(evaluationService).evaluate(answers);
+    verify(gradingService).hasPass(List.of(verifiedAnswer), 1);
+    verify(writer).write("Congratulations, you have passed");
   }
 
 }
