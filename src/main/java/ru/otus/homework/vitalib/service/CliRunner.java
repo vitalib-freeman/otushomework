@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class CliRunner implements Runner {
+public class CliRunner extends Runner {
   private final Writer writer;
   private final Reader reader;
   private final QuestionService questionService;
@@ -31,25 +31,38 @@ public class CliRunner implements Runner {
     this.gradeService = gradeService;
     this.passRate = passRate;
   }
-  @Override
-  public void run() {
-    writer.write("Hi, input pls your name: ");
-    String userName = reader.read();
 
+  @Override
+  protected void printResult(boolean hasPass) {
+    if (hasPass) {
+      writer.write("Congratulations, you have passed the test\n");
+    } else {
+      writer.write("Sorry, you have failed the test\n");
+    }
+  }
+
+  @Override
+  protected boolean getGrade(List<Answer> answers) {
+    List<VerifiedAnswer> verifiedAnswers = evaluationService.evaluate(answers);
+    return gradeService.hasPass(verifiedAnswers, passRate);
+  }
+
+  @Override
+  protected List<Answer> getUserAnswers(String userName) {
+    writer.write(String.format("%s, please answer the following questions:\n", userName));
     List<Question> questions = questionService.getQuestions();
     List<Answer> answers = new ArrayList<>();
     for (Question question : questions) {
-      writer.write(question.getQuestionText());
+      writer.write(String.format("---> %s: ", question.getQuestionText()));
       String answer = reader.read();
       answers.add(new Answer(question, answer));
     }
-    List<VerifiedAnswer> verifiedAnswers = evaluationService.evaluate(answers);
-    boolean hasPass = gradeService.hasPass(verifiedAnswers, passRate);
-    if (hasPass) {
-      writer.write("Congratulations, you have passed");
-    } else {
-      writer.write("Sorry, you have failed");
-    }
+    return answers;
+  }
 
+  @Override
+  protected String getUserName() {
+    writer.write("Hi, pls enter your name: ");
+    return reader.read();
   }
 }

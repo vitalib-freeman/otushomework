@@ -2,7 +2,6 @@ package ru.otus.homework.vitalib.service;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -19,7 +18,6 @@ import static org.mockito.Mockito.when;
 class RunnerTest {
   @Mock
   CliWriter writer;
-
   @Mock
   private CliReader reader;
   @Mock
@@ -30,7 +28,7 @@ class RunnerTest {
   private SimpleGradeService gradingService;
 
   @Test
-  public void testRunner() {
+  public void testSuccessTest() {
     Question question = new Question("QuestionText", "QuestionAnswer");
     List<Question> questions = List.of(question);
     Answer answer = new Answer(question, "QuestionAnswer");
@@ -41,16 +39,14 @@ class RunnerTest {
     when(evaluationService.evaluate(answers)).thenReturn(List.of(verifiedAnswer));
     when(gradingService.hasPass(List.of(verifiedAnswer), 1d)).thenReturn(true);
 
-
     new CliRunner(writer, reader, questionService, evaluationService, gradingService, 1d).run();
 
-    verify(writer).write("Hi, input pls your name: ");
+    verify(writer).write("Hi, pls enter your name: ");
     verify(questionService).getQuestions();
-    verify(writer).write("QuestionText");
+    verify(writer).write("---> QuestionText: ");
     verify(reader, Mockito.times(2)).read();
     verify(evaluationService).evaluate(answers);
     verify(gradingService).hasPass(List.of(verifiedAnswer), 1);
-    verify(writer).write("Congratulations, you have passed");
+    verify(writer).write("Congratulations, you have passed the test\n");
   }
-
 }
