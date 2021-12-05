@@ -1,10 +1,9 @@
 package ru.otus.homework.vitalib.dao;
 
 import org.springframework.stereotype.Repository;
-import ru.otus.homework.vitalib.config.QuestionsConfig;
 import ru.otus.homework.vitalib.converter.CsvConverter;
-import ru.otus.homework.vitalib.utils.DataParser;
 import ru.otus.homework.vitalib.model.Question;
+import ru.otus.homework.vitalib.utils.DataParser;
 import ru.otus.homework.vitalib.utils.ReaderProvider;
 
 import java.io.Reader;
@@ -17,12 +16,12 @@ public class QuestionDaoCsv implements QuestionDao {
   private final String filePath;
   private final CsvConverter csvConverter;
 
-  public QuestionDaoCsv(QuestionsConfig questionsConfig,
-                        ReaderProvider readerProvider,
+  public QuestionDaoCsv(ReaderProvider readerProvider,
                         DataParser dataParser,
-                        CsvConverter csvConverter) {
+                        CsvConverter csvConverter,
+                        String filePath) {
     this.readerProvider = readerProvider;
-    this.filePath = questionsConfig.getFilePath();
+    this.filePath = filePath;
     this.dataParser = dataParser;
     this.csvConverter = csvConverter;
   }

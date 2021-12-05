@@ -5,7 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import ru.otus.homework.vitalib.config.QuestionsConfig;
+import ru.otus.homework.vitalib.config.QuestionProperties;
 import ru.otus.homework.vitalib.model.Answer;
 import ru.otus.homework.vitalib.model.Question;
 import ru.otus.homework.vitalib.model.VerifiedAnswer;
@@ -22,35 +22,40 @@ class RunnerTest {
   @Mock
   private CliReader reader;
   @Mock
-  private QuestionServiceImpl questionService;
-  @Mock
   private SimpleEvaluationService evaluationService;
   @Mock
   private SimpleGradeService gradingService;
   @Mock
-  private QuestionsConfig questionsProperties;
+  private QuestionProperties questionProperties;
+  @Mock
+  private MessageProvider messageProvider;
 
   @Test
   public void testSuccessTest() {
     Question question = new Question("QuestionText", "QuestionAnswer");
     List<Question> questions = List.of(question);
+    mockMessageSource(questions);
     Answer answer = new Answer(question, "QuestionAnswer");
     List<Answer> answers = List.of(answer);
     VerifiedAnswer verifiedAnswer = new VerifiedAnswer(question, "QuestionAnswer", true);
-    when(questionService.getQuestions()).thenReturn(questions);
     when(reader.read()).thenReturn("QuestionAnswer");
     when(evaluationService.evaluate(answers)).thenReturn(List.of(verifiedAnswer));
     when(gradingService.hasPass(List.of(verifiedAnswer), 1d)).thenReturn(true);
-    when(questionsProperties.getPassRate()).thenReturn(1d);
+    when(questionProperties.getPassRate()).thenReturn(1d);
 
-    new CliRunner(writer, reader, questionService, evaluationService, gradingService, questionsProperties).run();
+    new CliRunner(writer, reader, evaluationService, gradingService, questionProperties, messageProvider).run();
 
-    verify(writer).write("Hi, pls enter your name: ");
-    verify(questionService).getQuestions();
+    verify(writer).write("Hi, pls enter your name:");
     verify(writer).write("---> QuestionText: ");
     verify(reader, Mockito.times(2)).read();
     verify(evaluationService).evaluate(answers);
     verify(gradingService).hasPass(List.of(verifiedAnswer), 1);
     verify(writer).write("Congratulations, you have passed the test\n");
+  }
+
+  private void mockMessageSource(List<Question> questions) {
+    when(messageProvider.getGreetingMessage()).thenReturn("Hi, pls enter your name:");
+    when(messageProvider.getTestPassMessage()).thenReturn("Congratulations, you have passed the test");
+    when(messageProvider.getQuestions()).thenReturn(questions);
   }
 }

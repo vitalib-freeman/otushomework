@@ -1,7 +1,7 @@
 package ru.otus.homework.vitalib.service;
 
 import org.springframework.stereotype.Service;
-import ru.otus.homework.vitalib.config.QuestionsConfig;
+import ru.otus.homework.vitalib.config.QuestionProperties;
 import ru.otus.homework.vitalib.model.Answer;
 import ru.otus.homework.vitalib.model.Question;
 import ru.otus.homework.vitalib.model.VerifiedAnswer;
@@ -13,23 +13,23 @@ import java.util.List;
 public class CliRunner implements Runner {
   private final Writer writer;
   private final Reader reader;
-  private final QuestionService questionService;
   private final EvaluationService evaluationService;
   private final GradeService gradeService;
   private final double passRate;
+  private final MessageProvider messageProvider;
 
   public CliRunner(Writer writer,
                    Reader reader,
-                   QuestionService questionService,
                    EvaluationService evaluationService,
                    GradeService gradeService,
-                   QuestionsConfig questionsProperties) {
+                   QuestionProperties questionsProperties,
+                   MessageProvider messageProvider) {
     this.writer = writer;
     this.reader = reader;
-    this.questionService = questionService;
     this.evaluationService = evaluationService;
     this.gradeService = gradeService;
     this.passRate = questionsProperties.getPassRate();
+    this.messageProvider = messageProvider;
   }
 
   public void run() {
@@ -40,11 +40,10 @@ public class CliRunner implements Runner {
   }
 
   public void printResult(boolean hasPass) {
-    if (hasPass) {
-      writer.write("Congratulations, you have passed the test\n");
-    } else {
-      writer.write("Sorry, you have failed the test\n");
-    }
+    String result = hasPass
+       ? messageProvider.getTestPassMessage()
+       : messageProvider.getTestFailMessage();
+    writer.write(String.format("%s\n", result));
   }
 
   public boolean getGrade(List<Answer> answers) {
@@ -53,8 +52,18 @@ public class CliRunner implements Runner {
   }
 
   public List<Answer> getUserAnswers(String userName) {
-    writer.write(String.format("%s, please answer the following questions:\n", userName));
-    List<Question> questions = questionService.getQuestions();
+    writer.write(String.format("%s\n",messageProvider.getTestWelcomeMessage(userName)));
+    List<Question> questions = messageProvider.getQuestions();
+    List<Answer> answers = getAnswers(questions);
+    return answers;
+  }
+
+  public String getUserName() {
+    writer.write(messageProvider.getGreetingMessage());
+    return reader.read();
+  }
+
+  private List<Answer> getAnswers(List<Question> questions) {
     List<Answer> answers = new ArrayList<>();
     for (Question question : questions) {
       writer.write(String.format("---> %s: ", question.getQuestionText()));
@@ -64,8 +73,4 @@ public class CliRunner implements Runner {
     return answers;
   }
 
-  public String getUserName() {
-    writer.write("Hi, pls enter your name: ");
-    return reader.read();
-  }
 }

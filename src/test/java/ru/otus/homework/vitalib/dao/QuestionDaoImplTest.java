@@ -4,7 +4,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import ru.otus.homework.vitalib.config.QuestionsConfig;
 import ru.otus.homework.vitalib.converter.CsvConverter;
 import ru.otus.homework.vitalib.utils.CsvParser;
 import ru.otus.homework.vitalib.utils.FileReaderProvider;
@@ -29,8 +28,6 @@ class QuestionDaoImplTest {
   private CsvParser csvParser;
   @Mock
   private CsvConverter csvConverter;
-  @Mock
-  QuestionsConfig questionsConfig;
 
   @InjectMocks
   private QuestionDaoCsv questionDaoCsv;
@@ -42,6 +39,7 @@ class QuestionDaoImplTest {
     rows.add(row);
     when(csvParser.getLines(any())).thenReturn(rows);
     when(csvConverter.convert(any())).thenReturn(List.of(new Question("one", "two")));
+
     List<Question> questions = questionDaoCsv.getQuestions();
 
     assertNotNull(questions);
