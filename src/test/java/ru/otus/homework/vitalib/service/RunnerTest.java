@@ -5,6 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import ru.otus.homework.vitalib.config.QuestionsConfig;
 import ru.otus.homework.vitalib.model.Answer;
 import ru.otus.homework.vitalib.model.Question;
 import ru.otus.homework.vitalib.model.VerifiedAnswer;
@@ -26,6 +27,8 @@ class RunnerTest {
   private SimpleEvaluationService evaluationService;
   @Mock
   private SimpleGradeService gradingService;
+  @Mock
+  private QuestionsConfig questionsProperties;
 
   @Test
   public void testSuccessTest() {
@@ -38,8 +41,9 @@ class RunnerTest {
     when(reader.read()).thenReturn("QuestionAnswer");
     when(evaluationService.evaluate(answers)).thenReturn(List.of(verifiedAnswer));
     when(gradingService.hasPass(List.of(verifiedAnswer), 1d)).thenReturn(true);
+    when(questionsProperties.getPassRate()).thenReturn(1d);
 
-    new CliRunner(writer, reader, questionService, evaluationService, gradingService, 1d).run();
+    new CliRunner(writer, reader, questionService, evaluationService, gradingService, questionsProperties).run();
 
     verify(writer).write("Hi, pls enter your name: ");
     verify(questionService).getQuestions();

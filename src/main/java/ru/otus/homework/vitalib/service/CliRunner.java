@@ -1,7 +1,7 @@
 package ru.otus.homework.vitalib.service;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import ru.otus.homework.vitalib.config.QuestionsConfig;
 import ru.otus.homework.vitalib.model.Answer;
 import ru.otus.homework.vitalib.model.Question;
 import ru.otus.homework.vitalib.model.VerifiedAnswer;
@@ -23,13 +23,13 @@ public class CliRunner implements Runner {
                    QuestionService questionService,
                    EvaluationService evaluationService,
                    GradeService gradeService,
-                   @Value("${passRate}") double passRate) {
+                   QuestionsConfig questionsProperties) {
     this.writer = writer;
     this.reader = reader;
     this.questionService = questionService;
     this.evaluationService = evaluationService;
     this.gradeService = gradeService;
-    this.passRate = passRate;
+    this.passRate = questionsProperties.getPassRate();
   }
 
   public void run() {

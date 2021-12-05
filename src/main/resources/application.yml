@@ -1,0 +1,3 @@
+questions:
+  file-path: questions.csv
+  pass-rate: 0.5

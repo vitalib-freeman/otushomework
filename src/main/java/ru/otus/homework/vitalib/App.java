@@ -1,18 +1,23 @@
 package ru.otus.homework.vitalib;
 
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.PropertySource;
+import ru.otus.homework.vitalib.config.QuestionsConfig;
 import ru.otus.homework.vitalib.service.CliRunner;
 import ru.otus.homework.vitalib.service.Runner;
 
-@ComponentScan
-@PropertySource("classpath:application.properties")
+@SpringBootApplication
+@EnableConfigurationProperties
+@PropertySource("application.yml")
 public class App {
   public static void main(String[] args) {
-    ApplicationContext context = new AnnotationConfigApplicationContext(App.class);
-    Runner runner = context.getBean(CliRunner.class);
+    ConfigurableApplicationContext context = SpringApplication.run(App.class, args);
+    Runner runner = context.getBean(Runner.class);
     runner.run();
   }
 }
