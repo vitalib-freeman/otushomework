@@ -43,7 +43,7 @@ class RunnerTest {
     when(gradingService.hasPass(List.of(verifiedAnswer), 1d)).thenReturn(true);
     when(questionProperties.getPassRate()).thenReturn(1d);
 
-    new CliRunner(writer, reader, evaluationService, gradingService, questionProperties, messageProvider).run(null);
+    new CliRunner(writer, reader, evaluationService, gradingService, questionProperties, messageProvider).run();
 
     verify(writer).write("Hi, pls enter your name:");
     verify(writer).write("---> QuestionText: ");
