@@ -1,5 +1,8 @@
 package ru.otus.homework.vitalib.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import ru.otus.homework.vitalib.dao.QuestionDao;
 import ru.otus.homework.vitalib.model.Question;
 import org.junit.jupiter.api.Test;
@@ -15,11 +18,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest(classes = QuestionServiceImpl.class)
 public class QuestionServiceTest {
-  @InjectMocks
-  private QuestionServiceImpl questionService;
-  @Mock
+  @Autowired
+  private QuestionService questionService;
+  @MockBean
   private QuestionDao questionDao;
 
   @Test

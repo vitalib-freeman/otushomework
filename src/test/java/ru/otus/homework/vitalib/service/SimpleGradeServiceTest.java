@@ -7,7 +7,8 @@ import ru.otus.homework.vitalib.model.VerifiedAnswer;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SimpleGradeServiceTest {
 
