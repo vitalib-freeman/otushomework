@@ -1,7 +1,5 @@
 package ru.otus.homework.vitalib.service;
 
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Service;
 import ru.otus.homework.vitalib.config.QuestionProperties;
 import ru.otus.homework.vitalib.model.Answer;
@@ -12,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class CliRunner implements ApplicationRunner {
+public class CliRunner {
   private final Writer writer;
   private final Reader reader;
   private final EvaluationService evaluationService;
@@ -34,7 +32,7 @@ public class CliRunner implements ApplicationRunner {
     this.messageProvider = messageProvider;
   }
 
-  public void run(ApplicationArguments args) {
+  public void run() {
     String userName = getUserName();
     List<Answer> answers = getUserAnswers(userName);
     boolean hasPass = getGrade(answers);

@@ -1,10 +1,11 @@
 package ru.otus.homework.vitalib.service;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.TestPropertySource;
 import ru.otus.homework.vitalib.config.QuestionProperties;
 import ru.otus.homework.vitalib.model.Answer;
 import ru.otus.homework.vitalib.model.Question;
@@ -15,19 +16,21 @@ import java.util.List;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest(classes = {CliRunner.class})
 class RunnerTest {
-  @Mock
-  CliWriter writer;
-  @Mock
+  @Autowired
+  private CliRunner cliRunner;
+  @MockBean
+  private CliWriter writer;
+  @MockBean
   private CliReader reader;
-  @Mock
-  private SimpleEvaluationService evaluationService;
-  @Mock
-  private SimpleGradeService gradingService;
-  @Mock
+  @MockBean
+  private EvaluationService evaluationService;
+  @MockBean
+  private GradeService gradeService;
+  @MockBean
   private QuestionProperties questionProperties;
-  @Mock
+  @MockBean
   private MessageProvider messageProvider;
 
   @Test
@@ -40,16 +43,15 @@ class RunnerTest {
     VerifiedAnswer verifiedAnswer = new VerifiedAnswer(question, "QuestionAnswer", true);
     when(reader.read()).thenReturn("QuestionAnswer");
     when(evaluationService.evaluate(answers)).thenReturn(List.of(verifiedAnswer));
-    when(gradingService.hasPass(List.of(verifiedAnswer), 1d)).thenReturn(true);
-    when(questionProperties.getPassRate()).thenReturn(1d);
+    when(gradeService.hasPass(List.of(verifiedAnswer), 0d)).thenReturn(true);
 
-    new CliRunner(writer, reader, evaluationService, gradingService, questionProperties, messageProvider).run(null);
+    cliRunner.run();
 
     verify(writer).write("Hi, pls enter your name:");
     verify(writer).write("---> QuestionText: ");
     verify(reader, Mockito.times(2)).read();
     verify(evaluationService).evaluate(answers);
-    verify(gradingService).hasPass(List.of(verifiedAnswer), 1);
+    verify(gradeService).hasPass(List.of(verifiedAnswer), 0);
     verify(writer).write("Congratulations, you have passed the test\n");
   }
 
